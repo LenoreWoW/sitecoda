@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VaultSnap AI · Long-Receipt Stitcher & Warranty Vault</title>
+  <style>
+    :root {
+      --bg: #07091b;
+      --card: #101432;
+      --indigo: #6366f1;
+      --emerald: #10b981;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); line-height: 1.5; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 36px 20px 80px; }
+    .pill { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgba(16,185,129,0.15); color: var(--emerald); font-weight: 700; font-size: 12px; letter-spacing: 0.08em; }
+    h1 { font-size: clamp(28px, 5vw, 44px); margin: 14px 0 10px; line-height: 1.15; }
+    .sub { color: var(--muted); font-size: 18px; max-width: 680px; margin-bottom: 28px; }
+    .card { background: var(--card); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 24px; margin-bottom: 22px; }
+    textarea { width: 100%; min-height: 140px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.16); background: #090c22; color: #fff; padding: 14px; font-family: ui-monospace, monospace; font-size: 14px; }
+    .btn { background: var(--indigo); color: #fff; border: none; border-radius: 12px; padding: 14px 22px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 12px; }
+    .preset-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .chip { background: rgba(99,102,241,0.16); color: #c7d2fe; border: 1px solid rgba(99,102,241,0.35); border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 18px; }
+    .stat { background: rgba(255,255,255,0.04); border-radius: 14px; padding: 14px; }
+    .stat-label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    .stat-val { font-size: 22px; font-weight: 800; color: var(--emerald); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <span class="pill">VAULTSNAP AI · VERIFIED RECEIPT & WARRANTY VAULT</span>
+    <h1>Stitch 3-Foot Receipts & Track Every Warranty in 1 Tap.</h1>
+    <p class="sub">Never lose a fading thermal receipt again. Automatically filters out "Change / Cash Tendered" errors, supports Qatar/UK (DD/MM/YYYY) & US (MM/DD/YYYY) dates, and generates Verified 9:16 Warranty Certificates.</p>
+
+    <div class="card">
+      <div class="preset-row">
+        <button class="chip" onclick="loadSample(0)">Jarir Doha · MacBook M3 (QAR)</button>
+        <button class="chip" onclick="loadSample(1)">Doha Sports · Garmin Enduro 3 (QAR)</button>
+        <button class="chip" onclick="loadSample(2)">Home Depot · Property Maintenance (USD)</button>
+      </div>
+      <textarea id="receiptInput"></textarea>
+      <button class="btn" onclick="analyzeReceipt()">Extract Warranty & Verified Total</button>
+
+      <div class="grid" id="resultGrid"></div>
+    </div>
+  </div>
+  <script>
+    const samples = [
+      "JARIR BOOKSTORE - DOHA QATAR\nDate: 18/10/2026\nMacBook Air 15 M3 4,999.00 QAR\nUSB-C Hub 199.00 QAR\nSerial: C02X9482Q6L4\n2 Year Warranty Included\n14-Day Return Policy\nGrand Total 5,198.00 QAR\nCash Tendered 5,500.00 QAR\nChange 302.00 QAR",
+      "DOHA ENDURANCE SPORTS QATAR\nDate: 18/10/2026\nGarmin Enduro 3 Sapphire 3,450.00 QAR\nHRM-Pro Plus Strap 490.00 QAR\nSerial: GRM9981204QA\n2 Year Warranty Included\n30-Day Return Policy\nGrand Total 3,940.00 QAR",
+      "THE HOME DEPOT #4102\nDate: 10/15/2026\nMoen Kitchen Faucet $189.00\n90-Day Return Policy\nTax $18.11\nTotal $237.61\nCash $250.00\nChange $12.39"
+    ];
+    function loadSample(i) {
+      document.getElementById('receiptInput').value = samples[i];
+      analyzeReceipt();
+    }
+    function analyzeReceipt() {
+      const raw = document.getElementById('receiptInput').value;
+      const lines = raw.split(/\n+/).map(s => s.trim()).filter(Boolean);
+      const merchant = lines[0] || "Scanned Receipt";
+      const currency = /qar|qatar/i.test(raw) ? "QAR" : (/\$|usd/i.test(raw) ? "USD" : "QAR");
+      let total = "0.00";
+      for (const l of lines) {
+        if (/change|tendered|cash/i.test(l)) continue;
+        if (/total/i.test(l) && !/subtotal/i.test(l)) {
+          const m = l.match(/(\d[\d,]*\.\d{2})/);
+          if (m) total = m[1];
+        }
+      }
+      const snMatch = raw.match(/(?:Serial|S\/N|IMEI)\s*[:#\-]?\s*([A-Z0-9\-]{5,24})/i);
+      const warranty = /2 year|24 month/i.test(raw) ? "24 Months Active" : (/1 year|12 month/i.test(raw) ? "12 Months Active" : "Standard Return");
+      const ret = /90-day|90 day/i.test(raw) ? "90 Days" : (/14-day|14 day/i.test(raw) ? "14 Days" : "30 Days");
+      document.getElementById('resultGrid').innerHTML = `
+        <div class="stat"><div class="stat-label">Merchant</div><div class="stat-val" style="font-size:16px;color:#fff">${merchant}</div></div>
+        <div class="stat"><div class="stat-label">Verified Total (Change Ignored)</div><div class="stat-val">${currency} ${total}</div></div>
+        <div class="stat"><div class="stat-label">Warranty Status</div><div class="stat-val">${warranty}</div></div>
+        <div class="stat"><div class="stat-label">Return Window & S/N</div><div class="stat-val" style="font-size:15px;color:#fff">${ret} · ${snMatch ? snMatch[1] : 'N/A'}</div></div>
+      `;
+    }
+    loadSample(0);
+  </script>
+</body>
+</html>

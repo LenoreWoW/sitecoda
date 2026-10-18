@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>PureScan AI — Gut, Seed Oil, Halal E-Number &amp; Cosmetic Toxicity Scanner</title>
+  <meta name="description" content="Scan any food label, supermarket snack, or skincare bottle in 3 seconds. Instant 0–100 Clean Score with EFSA, FDA, NIH PubMed &amp; Halal E-Number citations.">
+  <style>
+    :root {
+      --bg: #f3f8f6;
+      --card: #ffffff;
+      --ink: #0f241f;
+      --muted: #526b63;
+      --emerald: #0d946b;
+      --amber: #d97706;
+      --crimson: #dc2626;
+      --line: rgba(15, 36, 31, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    header {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand {
+      font-weight: 900;
+      font-size: 20px;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-badge {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: var(--emerald);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+    .grid {
+      max-width: 1180px;
+      margin: 12px auto 64px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: 0 14px 36px rgba(15, 36, 31, 0.05);
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--emerald);
+      margin: 0 0 6px;
+    }
+    h1, h2, h3 { margin: 0 0 8px; }
+    .sub { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+    .pillars {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .pillar-btn {
+      border: 1.5px solid var(--line);
+      background: #f9fcfa;
+      border-radius: 14px;
+      padding: 11px 13px;
+      text-align: left;
+      cursor: pointer;
+    }
+    .pillar-btn.active {
+      border-color: var(--emerald);
+      background: rgba(13, 148, 107, 0.08);
+    }
+    .pillar-btn strong { display: block; font-size: 13px; color: var(--ink); }
+    .pillar-btn span { font-size: 11px; color: var(--emerald); font-weight: 700; }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .chip:hover { border-color: var(--emerald); color: var(--emerald); }
+    input, textarea {
+      width: 100%;
+      padding: 11px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #f6faf8;
+      font: inherit;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    .score-hero {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      background: #f6faf8;
+      margin-bottom: 18px;
+    }
+    .score-ring {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      border: 7px solid var(--emerald);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    .flag-card {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+    .badge {
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .badge.highRisk { background: rgba(220, 38, 38, 0.14); color: var(--crimson); }
+    .badge.caution { background: rgba(217, 119, 6, 0.15); color: var(--amber); }
+    .btn-primary {
+      background: var(--emerald);
+      color: #fff;
+      border: none;
+      padding: 13px 20px;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#"><span class="brand-badge">P</span> PureScan AI</a>
+    <div style="font-size:12px;font-weight:700;color:var(--emerald);">iOS StoreKit 2 ($39.99/yr Trial) + Web Companion</div>
+  </header>
+
+  <div class="grid">
+    <section class="panel">
+      <p class="eyebrow">1. PERSONALIZED WATCHLIST PILLARS</p>
+      <h2>Scan Food, Gut Triggers, Halal E-Numbers &amp; Skincare</h2>
+      <p class="sub">Select your active triggers below, then click any supermarket product preset or paste an English/Arabic label.</p>
+
+      <div class="pillars" id="pillarsBox">
+        <button type="button" class="pillar-btn active" data-pillar="gut_bloat">
+          <strong>Gut &amp; Bloating Triggers</strong>
+          <span>مهيجات القولون والانتفاخ · E407 / E433</span>
+        </button>
+        <button type="button" class="pillar-btn active" data-pillar="seed_oils">
+          <strong>Refined Seed Oils &amp; Dyes</strong>
+          <span>الزيوت المكررة · Canola / Red 40 / BHT</span>
+        </button>
+        <button type="button" class="pillar-btn active" data-pillar="halal_tayyib">
+          <strong>Halal &amp; E-Number Check</strong>
+          <span>فحص الحلال وأرقام E · E120 / E471 / Gelatin</span>
+        </button>
+        <button type="button" class="pillar-btn active" data-pillar="pore_cloggers">
+          <strong>Acne &amp; Hormone Cosmetics</strong>
+          <span>مسببات حب الشباب · Comedogenic Esters</span>
+        </button>
+      </div>
+
+      <p class="eyebrow">2. SUPERMARKET &amp; SKINCARE PRESETS</p>
+      <div class="preset-row">
+        <button type="button" class="chip" data-sample="0">🥛 Barista Oat Milk (EN)</button>
+        <button type="button" class="chip" data-sample="1">🍓 Strawberry Protein Drink (E120/E471)</button>
+        <button type="button" class="chip" data-sample="2">🧴 Hydrating Night Cream (Pore Cloggers)</button>
+        <button type="button" class="chip" data-sample="3">🇶🇦 شيبس ذرة — الدوحة (AR)</button>
+        <button type="button" class="chip" data-sample="4">🫒 Organic Olive Oil Crisps (100/100)</button>
+      </div>
+
+      <input id="prodName" type="text" value="Barista Oat Milk (Supermarket Brand)">
+      <textarea id="ingInput" rows="5">Water, Oats (10%), Rapeseed Oil, Dipotassium Phosphate, Calcium Carbonate, Maltodextrin, Carrageenan (E407), Sea Salt.</textarea>
+
+      <button type="button" class="btn-primary" id="shareCardBtn">📲 Copy Viral TikTok / WhatsApp Score Card</button>
+    </section>
+
+    <section class="panel" aria-label="Live Scan Report">
+      <p class="eyebrow">INSTANT CLINICAL &amp; REGULATORY REPORT</p>
+      <div class="score-hero">
+        <div class="score-ring" id="scoreRing">
+          <span id="scoreNum">28</span>
+          <small style="font-size:10px;color:var(--muted);">/ 100</small>
+        </div>
+        <div>
+          <div id="gradeBadge" style="font-size:12px;font-weight:900;color:var(--crimson);">AVOID · HIGH TRIGGER LOAD</div>
+          <h3 id="reportTitle" style="font-size:21px;margin:2px 0 4px;">Barista Oat Milk</h3>
+          <div id="personalMatchText" style="font-size:12px;color:var(--muted);font-weight:600;"></div>
+        </div>
+      </div>
+
+      <div id="flagsContainer"></div>
+    </section>
+  </div>
+
+  <script>
+    const SAMPLES = [
+      {
+        name: "Barista Oat Milk (Supermarket Brand)",
+        ingredients: "Water, Oats (10%), Rapeseed Oil, Dipotassium Phosphate, Calcium Carbonate, Maltodextrin, Carrageenan (E407), Sea Salt."
+      },
+      {
+        name: "Strawberry Protein Yogurt Drink",
+        ingredients: "Skim Milk, Whey Protein Concentrate, Modified Corn Starch, Sucralose (E955), Mono- and Diglycerides (E471), Carmine (E120), Polysorbate 80 (E433)."
+      },
+      {
+        name: "Rich Hydrating Night Cream",
+        ingredients: "Aqua, Glycerin, Isopropyl Myristate, Cetearyl Alcohol, Ethylhexyl Palmitate, Methylparaben, Propylparaben, Sodium Lauryl Sulfate, Parfum."
+      },
+      {
+        name: "شيبس تورتيلا بنكهة الجبن (Doha Supermarket)",
+        ingredients: "ذرة صفراء، زيت كانولا، زيت الصويا، مالتوديكسترين، ملح، أحمر 40 (E129)، كاراجينان (E407)."
+      },
+      {
+        name: "Organic Extra Virgin Olive Oil Potato Crisps",
+        ingredients: "Organic Potatoes, 100% Organic Extra Virgin Olive Oil, Unrefined Sea Salt."
+      }
+    ];
+
+    const RULES = [
+      {
+        id: "carrageenan",
+        name: "Carrageenan (E407)",
+        ar: "كاراجينان (E407)",
+        pillar: "gut_bloat",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["carrageenan", "e407", "كاراجينان"],
+        impact: "Emulsifier linked to intestinal permeability, microbiota disruption, and post-meal bloating.",
+        swap: "Choose organic nut/oat milk made with only water, oats/nuts, and sea salt.",
+        cite: "NIH PubMed · PMID 33752754",
+        url: "https://pubmed.ncbi.nlm.nih.gov/33752754/"
+      },
+      {
+        id: "polysorbate80",
+        name: "Polysorbate 80 (E433)",
+        ar: "بوليسوربات 80 (E433)",
+        pillar: "gut_bloat",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["polysorbate 80", "e433", "بوليسوربات"],
+        impact: "Synthetic emulsifier shown to erode protective gut mucus layer and promote gut inflammation.",
+        swap: "Switch to whole-food dairy or emulsifier-free yogurt.",
+        cite: "Nature / NIH PubMed · PMID 25731162",
+        url: "https://pubmed.ncbi.nlm.nih.gov/25731162/"
+      },
+      {
+        id: "maltodextrin",
+        name: "Maltodextrin",
+        ar: "مالتوديكسترين",
+        pillar: "gut_bloat",
+        risk: "caution",
+        penalty: 14,
+        Keywords: ["maltodextrin", "مالتوديكسترين"],
+        impact: "Ultra-processed starch with a glycemic spike higher than table sugar; promotes gut bloating.",
+        swap: "Choose snacks sweetened with whole dates or raw honey.",
+        cite: "NIH PubMed · PMID 23251538",
+        url: "https://pubmed.ncbi.nlm.nih.gov/23251538/"
+      },
+      {
+        id: "sucralose",
+        name: "Sucralose & Artificial Sweeteners (E955)",
+        ar: "سوكرالوز ومحليات صناعية (E955)",
+        pillar: "gut_bloat",
+        risk: "caution",
+        penalty: 14,
+        Keywords: ["sucralose", "e955", "aspartame", "sorbitol", "سوكرالوز"],
+        impact: "Alters human gut microbiome glucose tolerance and triggers osmotic gas.",
+        swap: "Choose pure monk fruit, stevia leaf, or unsweetened options.",
+        cite: "Cell / NIH PubMed · PMID 35987213",
+        url: "https://pubmed.ncbi.nlm.nih.gov/35987213/"
+      },
+      {
+        id: "seed_oils",
+        name: "Refined Industrial Seed Oil",
+        ar: "زيوت البذور المكررة (كانولا / صويا / دوار الشمس)",
+        pillar: "seed_oils",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["rapeseed oil", "canola oil", "soybean oil", "sunflower oil", "زيت كانولا", "زيت الصويا", "زيت دوار الشمس"],
+        impact: "Hexane-extracted polyunsaturated oil high in linoleic acid (Omega-6).",
+        swap: "Switch to 100% Extra Virgin Olive Oil, Avocado Oil, or Ghee.",
+        cite: "BMJ / NIH PubMed · PMID 23386268",
+        url: "https://pubmed.ncbi.nlm.nih.gov/23386268/"
+      },
+      {
+        id: "synthetic_dyes",
+        name: "Synthetic Azo Dye / Titanium Dioxide",
+        ar: "ألوان صناعية (أحمر 40 / E129 / E171)",
+        pillar: "seed_oils",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["red 40", "e129", "titanium dioxide", "e171", "أحمر 40"],
+        impact: "Synthetic food dye carrying regulatory warning labels in the EU.",
+        swap: "Choose foods colored with beetroot, turmeric, or paprika extract.",
+        cite: "EFSA Journal · 2021;19(5):6585",
+        url: "https://www.efsa.europa.eu/en/efsajournal/pub/6585"
+      },
+      {
+        id: "carmine_e120",
+        name: "Carmine / Cochineal Insect Pigment (E120)",
+        ar: "كارمين / صبغة الحشرات القرمزية (E120)",
+        pillar: "halal_tayyib",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["carmine", "cochineal", "e120", "كارمين"],
+        impact: "Extracted from crushed cochineal insects. Avoided under strict Halal rulings.",
+        swap: "Choose berry products colored with beetroot red (E162).",
+        cite: "FDA / Codex Alimentarius INS 120",
+        url: "https://www.fda.gov/food/color-additives-information-consumers/color-additives-questions-and-answers-consumers"
+      },
+      {
+        id: "e471_gelatin",
+        name: "Unverified Gelatin / Mono- & Diglycerides (E471)",
+        ar: "جيلاتين أو أحادي وثنائي الجليسريدات (E471)",
+        pillar: "halal_tayyib",
+        risk: "caution",
+        penalty: 14,
+        Keywords: ["gelatin", "mono- and diglycerides", "e471", "جيلاتين"],
+        impact: "Mashbooh (Doubtful) unless certified Halal or Plant-Based: can derive from animal or plant fats.",
+        swap: "Look for a Halal certification seal or plant pectin/sunflower lecithin.",
+        cite: "IFANCA Halal Food Standards",
+        url: "https://ifanca.org/resources/"
+      },
+      {
+        id: "comedogenic_esters",
+        name: "Isopropyl Myristate & Comedogenic Esters (5/5)",
+        ar: "إيزوبروبيل ميريستات (مسد للمسام 5/5)",
+        pillar: "pore_cloggers",
+        risk: "highRisk",
+        penalty: 28,
+        Keywords: ["isopropyl myristate", "ethylhexyl palmitate", "myristyl myristate"],
+        impact: "Rated 5/5 on the dermatological comedogenicity scale; blocks pores and triggers acne.",
+        swap: "Switch to Squalane or Hyaluronic Acid non-comedogenic formulas.",
+        cite: "J. Soc. Cosmet. Chem. · PMID 6229554",
+        url: "https://pubmed.ncbi.nlm.nih.gov/6229554/"
+      },
+      {
+        id: "parabens_sls",
+        name: "Parabens & Harsh Sulfates (SLS)",
+        ar: "بارابين وسلفات لوريل الصوديوم",
+        pillar: "pore_cloggers",
+        risk: "caution",
+        penalty: 14,
+        Keywords: ["methylparaben", "propylparaben", "sodium lauryl sulfate"],
+        impact: "Evaluated by EU CosIng / SCCS for skin barrier irritation and endocrine activity.",
+        swap: "Choose paraben-free, SLS-free glucoside cleansers.",
+        cite: "European Commission SCCS",
+        url: "https://health.ec.europa.eu/scientific-committees/scientific-committee-consumer-safety-sccs_en"
+      }
+    ];
+
+    let activePillars = new Set(["gut_bloat", "seed_oils", "halal_tayyib", "pore_cloggers"]);
+
+    function analyze() {
+      const name = document.getElementById("prodName").value.trim() || "Scanned Label";
+      const raw = document.getElementById("ingInput").value.toLowerCase();
+      const matched = [];
+
+      for (const r of RULES) {
+        if (r.Keywords.some(k => raw.includes(k))) {
+          matched.push({ ...r, matchesUser: activePillars.has(r.pillar) });
+        }
+      }
+
+      let score = 100;
+      for (const m of matched) {
+        score -= Math.round(m.penalty * (m.matchesUser ? 1.2 : 1.0));
+      }
+      score = Math.max(4, Math.min(100, score));
+
+      const color = score >= 80 ? "#0d946b" : score >= 55 ? "#d97706" : "#dc2626";
+      const label = score >= 80 ? "EXCELLENT · CLEAN FORMULA" : score >= 55 ? "MODERATE · USE CAUTION" : "AVOID · HIGH TRIGGER LOAD";
+
+      document.getElementById("scoreRing").style.borderColor = color;
+      document.getElementById("scoreNum").style.color = color;
+      document.getElementById("scoreNum").textContent = score;
+      document.getElementById("gradeBadge").style.color = color;
+      document.getElementById("gradeBadge").textContent = label;
+      document.getElementById("reportTitle").textContent = name;
+      document.getElementById("personalMatchText").textContent =
+        matched.length === 0
+          ? "✅ 0 hidden triggers detected across your watchlist."
+          : `⚠️ ${matched.filter(m => m.matchesUser).length} ingredients match your personal watchlist.`;
+
+      const box = document.getElementById("flagsContainer");
+      box.innerHTML = "";
+      if (matched.length === 0) {
+        box.innerHTML = `<div class="flag-card"><strong style="color:var(--emerald);">✅ 100% Clean Benchmark</strong><p style="margin:6px 0 0;font-size:13px;color:var(--muted);">No gut-disrupting emulsifiers, refined seed oils, comedogenic esters, or doubtful E-numbers found.</p></div>`;
+      } else {
+        for (const m of matched) {
+          const div = document.createElement("div");
+          div.className = "flag-card";
+          div.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+              <div>
+                <strong>${m.name}</strong>
+                <div style="font-size:12px;color:var(--emerald);font-weight:700;">${m.ar}</div>
+              </div>
+              <span class="badge ${m.risk}">${m.risk === "highRisk" ? "High Risk" : "Caution"}</span>
+            </div>
+            <p style="font-size:13px;margin:8px 0;">${m.impact}</p>
+            <div style="font-size:12px;color:var(--emerald);font-weight:700;margin-bottom:6px;">💡 Clean Swap: ${m.swap}</div>
+            <a href="${m.url}" target="_blank" rel="noopener" style="font-size:11px;color:var(--muted);font-weight:600;">🔬 Peer-Reviewed Source: ${m.cite} ↗</a>
+          `;
+          box.appendChild(div);
+        }
+      }
+    }
+
+    document.querySelectorAll("[data-sample]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const s = SAMPLES[Number(btn.getAttribute("data-sample"))];
+        document.getElementById("prodName").value = s.name;
+        document.getElementById("ingInput").value = s.ingredients;
+        analyze();
+      });
+    });
+
+    document.querySelectorAll(".pillar-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const p = btn.getAttribute("data-pillar");
+        if (activePillars.has(p) && activePillars.size > 1) {
+          activePillars.delete(p);
+          btn.classList.remove("active");
+        } else {
+          activePillars.add(p);
+          btn.classList.add("active");
+        }
+        analyze();
+      });
+    });
+
+    document.getElementById("prodName").addEventListener("input", analyze);
+    document.getElementById("ingInput").addEventListener("input", analyze);
+
+    document.getElementById("shareCardBtn").addEventListener("click", () => {
+      const score = document.getElementById("scoreNum").textContent;
+      const name = document.getElementById("prodName").value;
+      const text = `🚨 PureScan AI Score: ${score}/100\nProduct: ${name}\nScanned with PureScan AI (Gut, Seed Oil, Halal & Skincare Scanner)`;
+      navigator.clipboard.writeText(text);
+      const btn = document.getElementById("shareCardBtn");
+      btn.textContent = "✓ Copied Viral Score Summary!";
+      setTimeout(() => { btn.textContent = "📲 Copy Viral TikTok / WhatsApp Score Card"; }, 2000);
+    });
+
+    analyze();
+  </script>
+</body>
+</html>
