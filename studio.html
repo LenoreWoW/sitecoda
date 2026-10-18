@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>SiteCoda Studio — Voice & Field Note to Handover PDF</title>
-  <meta name="description" content="Turn job-site voice notes and photos in English, Arabic, or Spanish into a clean, client-ready property handover PDF in seconds.">
+  <title>SiteCoda Studio — AI Quote, Invoice &amp; Handover Generator (Qatar &amp; Global)</title>
+  <meta name="description" content="Turn job-site voice notes and photos in English, Arabic, or Spanish into an instant Quote, Invoice, or Property Handover PDF with 1-click MyFatoorah payment links.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23132e40'/%3E%3Cpath d='M9 7h10l5 5v14H9z' fill='%23fff'/%3E%3Cpath d='m12 18 3 3 6-7' fill='none' stroke='%232b7775' stroke-width='3'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="style.css">
   <style>
@@ -18,15 +18,15 @@
       --line: rgba(19, 46, 64, 0.14);
     }
     .studio-grid {
-      max-width: 1180px;
-      margin: 28px auto 64px;
+      max-width: 1220px;
+      margin: 24px auto 64px;
       padding: 0 20px;
       display: grid;
-      grid-template-columns: 1fr 1.08fr;
+      grid-template-columns: 1.02fr 1.08fr;
       gap: 24px;
       align-items: start;
     }
-    @media (max-width: 920px) {
+    @media (max-width: 940px) {
       .studio-grid { grid-template-columns: 1fr; }
     }
     .panel {
@@ -44,10 +44,16 @@
       gap: 12px;
       margin-bottom: 12px;
     }
+    .field-row-3 {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
     .field-group { margin-bottom: 14px; }
     .field-group label {
       display: block;
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -57,7 +63,7 @@
     .field-group input, .field-group textarea, .field-group select {
       width: 100%;
       box-sizing: border-box;
-      padding: 11px 13px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid var(--line);
       background: #f4f9fc;
@@ -104,24 +110,35 @@
       font-weight: 600;
     }
     .pdf-body { padding: 24px; }
-    .pdf-title { font-size: 28px; font-weight: 800; margin: 4px 0 6px; color: var(--ink); }
-    .pdf-meta { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+    .pdf-title { font-size: 27px; font-weight: 800; margin: 4px 0 6px; color: var(--ink); }
+    .pdf-meta { font-size: 13px; color: var(--muted); margin-bottom: 16px; line-height: 1.6; }
     .summary-strip {
       display: flex;
-      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
       padding: 12px 16px;
       border-radius: 12px;
       background: #f2f7fa;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-size: 13px;
       font-weight: 700;
     }
     .summary-strip .done { color: var(--teal); }
     .summary-strip .ret { color: var(--amber); }
+    .total-pill {
+      background: var(--teal);
+      color: #fff;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+    }
     .work-card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      padding: 14px 16px;
+      padding: 13px 16px;
       margin-bottom: 10px;
       display: flex;
       justify-content: space-between;
@@ -130,6 +147,12 @@
     }
     .work-card h4 { margin: 0 0 4px; font-size: 15px; color: var(--ink); }
     .work-card .loc { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .price-tag {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--teal);
+      white-space: nowrap;
+    }
     .badge {
       padding: 4px 10px;
       border-radius: 999px;
@@ -142,12 +165,33 @@
     .badge.done { background: rgba(20, 102, 102, 0.12); color: var(--teal); }
     .badge.returnVisit { background: rgba(148, 92, 5, 0.14); color: var(--amber); }
     .badge.open { background: rgba(79, 102, 120, 0.14); color: var(--muted); }
+    .pay-card {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      background: #f0fdfa;
+      border: 1px solid rgba(20, 102, 102, 0.28);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .pay-card a {
+      background: var(--teal);
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 700;
+    }
     .sig-box {
       border: 1px dashed var(--line);
       border-radius: 10px;
       background: #fafcfe;
       width: 100%;
-      height: 110px;
+      height: 100px;
       touch-action: none;
       cursor: crosshair;
     }
@@ -155,27 +199,66 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-top: 18px;
+      margin-top: 16px;
     }
     .btn-primary {
       background: var(--ink);
       color: #fff;
       border: none;
-      padding: 12px 20px;
+      padding: 11px 18px;
       border-radius: 12px;
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .btn-teal {
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
       cursor: pointer;
     }
     .btn-secondary {
       background: rgba(19, 46, 64, 0.07);
       color: var(--ink);
       border: none;
-      padding: 12px 16px;
+      padding: 11px 15px;
       border-radius: 12px;
       font-weight: 600;
-      font-size: 14px;
+      font-size: 13px;
       cursor: pointer;
+    }
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(19, 46, 64, 0.55);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: #fff;
+      max-width: 580px;
+      width: 100%;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    }
+    .code-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+      overflow-x: auto;
+      max-height: 180px;
     }
     .pdf-footer {
       margin-top: 22px;
@@ -187,7 +270,7 @@
       justify-content: space-between;
     }
     @media print {
-      header, .input-column, .no-print, footer { display: none !important; }
+      header, .input-column, .no-print, footer, .modal-backdrop { display: none !important; }
       .studio-grid { display: block; margin: 0; padding: 0; }
       .preview-sheet { border: none; box-shadow: none; }
       body { background: #fff; }
@@ -199,97 +282,166 @@
     <a class="brand" href="index.html" aria-label="SiteCoda home"><span class="mark">✓</span> SiteCoda</a>
     <nav aria-label="Main navigation">
       <a href="index.html">Overview</a>
-      <a href="studio.html" aria-current="page">Web Handover Studio</a>
+      <a href="studio.html" aria-current="page">Quote, Invoice &amp; Handover Studio</a>
+      <button type="button" class="chip no-print" id="openMfSettingsBtn">💳 MyFatoorah (Qatar) Setup</button>
       <a href="support.html">Support</a>
     </nav>
   </header>
 
   <div class="studio-grid">
     <section class="panel input-column">
-      <p class="eyebrow">WEB &amp; IOS FIELD STUDIO</p>
-      <h2>Turn walk-through notes into a client handover PDF</h2>
-      <p class="sub">Speak or paste your rough site notes in English, Arabic, or Spanish. Click any status pill in the preview to toggle between <strong>Done</strong>, <strong>Return visit</strong>, and <strong>Open</strong>.</p>
+      <p class="eyebrow">QATAR &amp; GLOBAL · AI QUOTE, INVOICE &amp; HANDOVER STUDIO</p>
+      <h2>Speak or paste site notes → Instant Quote, Invoice &amp; Handover PDF</h2>
+      <p class="sub">Dictate or paste notes in English, Arabic, or Spanish with line prices (e.g. <code>450 QAR</code>, <code>350 ر.ق</code>, <code>$180</code>). SiteCoda extracts each work item, status, and price automatically.</p>
+
+      <div class="field-row-3">
+        <div class="field-group">
+          <label for="docModeInput">Document Mode</label>
+          <select id="docModeInput">
+            <option value="invoice">Invoice &amp; Handover Record</option>
+            <option value="quote">Instant Client Quote</option>
+            <option value="handover">Work Handover Record</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="currencyInput">Currency</label>
+          <select id="currencyInput">
+            <option value="QAR">QAR (ر.ق)</option>
+            <option value="USD">USD ($)</option>
+            <option value="SAR">SAR (ر.س)</option>
+            <option value="AED">AED (د.إ)</option>
+            <option value="KWD">KWD (د.ك)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="refInput">Quote / Job Ref</label>
+          <input id="refInput" type="text" value="SC-0104">
+        </div>
+      </div>
 
       <div class="field-row">
         <div class="field-group">
           <label for="propInput">Property / Site</label>
-          <input id="propInput" type="text" value="Harbour View Apt 4B">
+          <input id="propInput" type="text" value="The Pearl Viva Bahriya Tower 12 · Apt 804">
         </div>
         <div class="field-group">
-          <label for="clientInput">Client / Manager</label>
-          <input id="clientInput" type="text" value="Northshore Property Mgmt">
+          <label for="clientInput">Client / Property Manager</label>
+          <input id="clientInput" type="text" value="Doha Premier Estates">
         </div>
       </div>
 
       <div class="field-row">
         <div class="field-group">
           <label for="bizInput">Your Business Name</label>
-          <input id="bizInput" type="text" value="Al-Sahli Field Maintenance">
+          <input id="bizInput" type="text" value="Al-Sahli Technical &amp; Fit-Out Services">
         </div>
         <div class="field-group">
-          <label for="refInput">Work Order / Ref</label>
-          <input id="refInput" type="text" value="SC-0104">
+          <label for="payLinkInput">MyFatoorah / Online Payment Link</label>
+          <div style="display:flex;gap:6px;">
+            <input id="payLinkInput" type="url" placeholder="https://portal.myfatoorah.com/qa/..." style="flex:1;">
+            <button type="button" class="chip" id="genMfLinkBtn" title="Generate MyFatoorah V2 Invoice Link">⚡ Create Link</button>
+          </div>
         </div>
       </div>
 
       <div class="field-group">
-        <label for="noteInput">Walk-Through Voice / Field Notes</label>
+        <label for="noteInput">Walk-Through Voice / Quote Notes (Include Prices in QAR / USD / ر.ق)</label>
         <div class="preset-bar">
           <button type="button" class="chip" id="micBtn">🎙️ Dictate Voice Note</button>
-          <button type="button" class="chip" data-preset="en">Sample: Plumbing &amp; Electrical (EN)</button>
-          <button type="button" class="chip" data-preset="ar">Sample: صيانة عقار (AR)</button>
-          <button type="button" class="chip" data-preset="es">Sample: Mantenimiento (ES)</button>
+          <button type="button" class="chip" data-preset="en_qa">Sample: Doha Villa AC &amp; Plumbing (EN · QAR)</button>
+          <button type="button" class="chip" data-preset="ar_qa">Sample: عرض سعر وصيانة — قطر (AR · ر.ق)</button>
+          <button type="button" class="chip" data-preset="en_usd">Sample: Commercial Handover (USD)</button>
         </div>
-        <textarea id="noteInput" rows="6">Kitchen: replaced leaking P-trap under sink and tested ok.
-Bathroom: exhaust fan motor noisy, replacement part needed on return visit.
-Hallway: replaced smoke detector backup battery and tested alarm.
-Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
+        <textarea id="noteInput" rows="6">Kitchen: replaced leaking Grohe mixer cartridge and braided supply hose 450 QAR done.
+Master Bathroom: resealed shower tray silicone and tested drainage 320 QAR done.
+Roof HVAC: chilled water actuator valve needs replacement part on return visit 580 QAR.
+Main Hallway: replaced emergency exit backup battery and tested ok 190 QAR.</textarea>
       </div>
 
       <div class="field-row">
         <div class="field-group">
           <label for="ackName">Customer Sign-Off Name (Optional)</label>
-          <input id="ackName" type="text" placeholder="e.g. Sarah Jenkins (Property Manager)">
+          <input id="ackName" type="text" placeholder="e.g. Tariq Al-Mansoor (Facility Manager)">
         </div>
         <div class="field-group">
           <label>In-Person Signature</label>
-          <canvas id="sigCanvas" class="sig-box" width="320" height="110"></canvas>
+          <canvas id="sigCanvas" class="sig-box" width="320" height="100"></canvas>
           <button type="button" class="chip" id="clearSigBtn" style="margin-top:6px;">Clear signature</button>
         </div>
       </div>
 
       <div class="btn-row no-print">
-        <button type="button" class="btn-primary" id="printBtn">Print / Save Handover PDF ↗</button>
-        <a class="btn-secondary" href="sample-report.pdf" target="_blank" style="text-decoration:none;">View iOS Native PDF Sample</a>
+        <button type="button" class="btn-primary" id="printBtn">Print / Save PDF ↗</button>
+        <button type="button" class="btn-teal" id="whatsappBtn">💬 Send Quote / Invoice via WhatsApp</button>
+        <a class="btn-secondary" href="sample-report.pdf" target="_blank" style="text-decoration:none;">iOS Native PDF Sample</a>
       </div>
     </section>
 
-    <section class="preview-sheet" aria-label="Live Handover Report Preview">
+    <section class="preview-sheet" aria-label="Live Quote & Handover Report Preview">
       <div class="pdf-banner">
-        <span id="pdfBizBanner">Al-Sahli Field Maintenance</span>
+        <span id="pdfBizBanner">Al-Sahli Technical &amp; Fit-Out Services</span>
         <span id="pdfRefBanner">SC-0104 / v1</span>
       </div>
       <div class="pdf-body" id="pdfBody">
-        <p class="eyebrow" style="margin:0;">WORK HANDOVER RECORD</p>
-        <div class="pdf-title" id="pdfPropTitle">Harbour View Apt 4B</div>
+        <p class="eyebrow" id="pdfModeBadge" style="margin:0;">INVOICE &amp; HANDOVER RECORD</p>
+        <div class="pdf-title" id="pdfPropTitle">The Pearl Viva Bahriya Tower 12 · Apt 804</div>
         <div class="pdf-meta" id="pdfMeta"></div>
 
         <div class="summary-strip" id="pdfSummary"></div>
 
         <div id="itemsContainer"></div>
 
+        <div class="pay-card" id="payCardPreview" style="display:none;">
+          <div>
+            <div style="font-size:11px;font-weight:800;color:var(--teal);letter-spacing:0.04em;">ONLINE PAYMENT · MYFATOORAH (QPAY / APPLE PAY / VISA / MADA)</div>
+            <div id="payCardUrlText" style="font-size:12px;color:var(--muted);word-break:break-all;margin-top:2px;"></div>
+          </div>
+          <a id="payCardBtn" href="#" target="_blank" rel="noopener">Pay Invoice Now ↗</a>
+        </div>
+
         <div style="margin-top:20px;">
-          <p class="eyebrow" style="margin-bottom:6px;">CUSTOMER ACKNOWLEDGMENT</p>
-          <div id="ackPreview" style="font-size:13px;color:var(--muted);">No customer acknowledgment recorded. This is the contractor’s work record.</div>
+          <p class="eyebrow" style="margin-bottom:6px;">CUSTOMER ACKNOWLEDGMENT &amp; APPROVAL</p>
+          <div id="ackPreview" style="font-size:13px;color:var(--muted);">No customer acknowledgment recorded. This is the contractor’s official record.</div>
           <img id="sigPreviewImg" alt="Customer signature" style="display:none;max-width:220px;height:68px;margin-top:8px;border-bottom:1px solid var(--line);">
         </div>
 
         <div class="pdf-footer">
-          <span>Generated with <strong>SiteCoda</strong> · Field Handover &amp; Property Ledger</span>
+          <span>Generated with <strong>SiteCoda</strong> · Field Quote, Invoice &amp; Handover Studio</span>
           <span id="pdfDateFooter"></span>
         </div>
       </div>
     </section>
+  </div>
+
+  <!-- MyFatoorah V2 Gateway Configuration & Sandbox Modal -->
+  <div class="modal-backdrop" id="mfModal">
+    <div class="modal-card">
+      <h3 style="margin:0 0 6px;color:var(--ink);">MyFatoorah V2 Gateway (Qatar `api-qa.myfatoorah.com`)</h3>
+      <p style="margin:0 0 16px;font-size:13px;color:var(--muted);">
+        Works immediately in <strong>Sandbox Mode</strong> while your Qatar Commercial Registration / MyFatoorah credentials are being issued. When your live token arrives in ~2 weeks, switch Mode to <strong>Live Qatar (`QA`)</strong> and paste your Worker proxy URL.
+      </p>
+      <div class="field-row">
+        <div class="field-group">
+          <label for="mfModeSelect">Gateway Mode</label>
+          <select id="mfModeSelect">
+            <option value="sandbox">Sandbox (Pre-Credentials Test Mode)</option>
+            <option value="live">Live Qatar (api-qa.myfatoorah.com)</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="mfProxyInput">Cloudflare Worker Proxy URL (For Live Token)</label>
+          <input id="mfProxyInput" type="url" placeholder="https://sitecoda-mf.your-domain.workers.dev">
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Live MyFatoorah V2 `/v2/SendPayment` Payload Preview</label>
+        <pre class="code-box" id="mfPayloadPreview"></pre>
+      </div>
+      <div class="btn-row" style="justify-content:flex-end;">
+        <button type="button" class="btn-secondary" id="closeMfModalBtn">Close</button>
+        <button type="button" class="btn-teal" id="saveMfConfigBtn">Save &amp; Generate Payment Link</button>
+      </div>
+    </div>
   </div>
 
   <footer>
@@ -299,23 +451,58 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
       <a href="privacy.html">Privacy</a>
       <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a>
     </div>
-    <small>© 2026 Hassan Al-Sahli</small>
+    <small>© 2026 Hassan Al-Sahli · Built for Qatar &amp; Global Field Teams</small>
   </footer>
 
+  <script src="myfatoorah.js"></script>
   <script>
     const presets = {
-      en: "Kitchen: replaced leaking P-trap under sink and tested ok.\nBathroom: exhaust fan motor noisy, replacement part needed on return visit.\nHallway: replaced smoke detector backup battery and tested alarm.\nExterior: inspect main shutoff valve access panel.",
-      ar: "المطبخ: تم تغيير خلاط المياه وإصلاح التهريب بالكامل.\nالحمام: مروحة الشفط تحتاج قطعة غيار في زيارة قادمة.\nالممر: تم تركيب حساس الدخان الجديد وتجربته.",
-      es: "Cocina: trampa de agua reemplazada y probada sin fugas, listo.\nBaño: extractor ruidoso, requiere repuesto en próxima visita.\nPasillo: revisar pintura junto a la puerta principal."
+      en_qa: "Kitchen: replaced leaking Grohe mixer cartridge and braided supply hose 450 QAR done.\nMaster Bathroom: resealed shower tray silicone and tested drainage 320 QAR done.\nRoof HVAC: chilled water actuator valve needs replacement part on return visit 580 QAR.\nMain Hallway: replaced emergency exit backup battery and tested ok 190 QAR.",
+      ar_qa: "المطبخ: تم تغيير خلاط المياه وإصلاح التهريب بالكامل 450 ر.ق.\nالحمام الرئيسي: عزل الشاور وتبديل الصفاية 320 ر.ق تم.\nالسطح: وحدة التكييف تحتاج تبديل صمام في زيارة قادمة 580 ر.ق.\nالممر: تركيب حساس الدخان الجديد وتجربته 190 ر.ق تم.",
+      en_usd: "Lobby: replaced magnetic door closer and aligned frame $280 done.\nUnit 4B Kitchen: garbage disposal jammed, replacement unit ordered for return visit $340.\nExterior: pressure washed concrete walkway and sealed expansion joints $450 done."
     };
 
     const returnMarkers = ["return visit", "next visit", "follow-up", "follow up", "need part", "needs part", "replacement part", "زيارة قادمة", "قطعة غيار", "يحتاج قطعة", "próxima visita", "repuesto"];
-    const doneMarkers = ["fixed", "repaired", "replaced", "installed", "completed", "tested", "sealed", "done", "تم ", "تمت", "إصلاح", "تغيير", "تركيب", "reparado", "reemplazado", "instalado", "listo"];
+    const doneMarkers = ["fixed", "repaired", "replaced", "installed", "completed", "tested", "sealed", "washed", "done", "تم ", "تمت", "إصلاح", "تغيير", "تركيب", "عزل", "reparado", "reemplazado", "instalado", "listo"];
 
     let itemsState = [];
 
+    function extractPriceAndClean(text) {
+      const patterns = [
+        /(?:QAR|SAR|AED|KWD|USD|\$|ر\.ق|ر\.س|د\.إ|د\.ك|ريال)\s*(\d+(?:[\.,]\d{1,2})?)/i,
+        /(\d+(?:[\.,]\d{1,2})?)\s*(?:QAR|SAR|AED|KWD|USD|ر\.ق|ر\.س|د\.إ|د\.ك|ريال قطري|ريال سعودي|ريال|درهم|دينار|دولار)/i
+      ];
+      for (const re of patterns) {
+        const m = text.match(re);
+        if (m && m[1]) {
+          const price = parseFloat(m[1].replace(",", "."));
+          if (price > 0) {
+            const cleaned = text.replace(m[0], "").replace(/\s{2,}/g, " ").replace(/[\-—:,،\s]+$/, "").trim();
+            return { price, cleaned: cleaned || text };
+          }
+        }
+      }
+      return { price: 0, cleaned: text };
+    }
+
+    function detectCurrencyFromNotes(raw) {
+      const lower = raw.toLowerCase();
+      if (lower.includes("qar") || lower.includes("ر.ق") || lower.includes("ريال قطري")) return "QAR";
+      if (lower.includes("usd") || lower.includes("$")) return "USD";
+      if (lower.includes("sar") || lower.includes("ر.س")) return "SAR";
+      if (lower.includes("aed") || lower.includes("د.إ")) return "AED";
+      if (lower.includes("kwd") || lower.includes("د.ك")) return "KWD";
+      return null;
+    }
+
     function parseNotes(raw) {
-      const lines = raw.replace(/\r\n/g, "\n").split(/[\n.。؛;]+/).map(s => s.trim()).filter(Boolean);
+      // Split by newlines or sentence-ending punctuation without breaking decimals or ر.ق
+      const lines = raw
+        .replace(/\r\n/g, "\n")
+        .split(/\n+/)
+        .map(s => s.trim().replace(/[\.。؛;]+$/, ""))
+        .filter(Boolean);
+
       let currentLoc = "";
       return lines.map((line, idx) => {
         let loc = currentLoc;
@@ -330,8 +517,17 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
         let status = "open";
         if (returnMarkers.some(m => lower.includes(m))) status = "returnVisit";
         else if (doneMarkers.some(m => lower.includes(m))) status = "done";
-        const requiresPhoto = status === "done" && /replaced|repaired|fixed|installed|تغيير|إصلاح|تركيب|reemplazad|reparad/.test(lower);
-        return { id: idx, title: body.charAt(0).toUpperCase() + body.slice(1), location: loc, status, requiresPhoto };
+
+        const { price, cleaned } = extractPriceAndClean(body);
+        const requiresPhoto = status === "done" && /replaced|repaired|fixed|installed|sealed|تغيير|إصلاح|تركيب|عزل|reemplazad|reparad/.test(lower);
+        return {
+          id: idx,
+          title: cleaned.charAt(0).toUpperCase() + cleaned.slice(1),
+          location: loc,
+          status,
+          price,
+          requiresPhoto
+        };
       });
     }
 
@@ -341,15 +537,33 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
       return "○ Open";
     }
 
+    function formatMoney(amount, currency) {
+      return `${currency} ${Number(amount || 0).toFixed(2)}`;
+    }
+
+    function totalAmount() {
+      return itemsState.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+    }
+
     function render() {
       const prop = document.getElementById("propInput").value.trim() || "Property Record";
       const client = document.getElementById("clientInput").value.trim();
       const biz = document.getElementById("bizInput").value.trim() || "SiteCoda Work Record";
       const ref = document.getElementById("refInput").value.trim() || "SC-0001";
       const ack = document.getElementById("ackName").value.trim();
+      const docMode = document.getElementById("docModeInput").value;
+      const currency = document.getElementById("currencyInput").value || "QAR";
+      const payLink = document.getElementById("payLinkInput").value.trim();
       const isArabic = /[\u0600-\u06FF]/.test(document.getElementById("noteInput").value);
 
+      const modeTitles = {
+        invoice: "INVOICE & HANDOVER RECORD",
+        quote: "CLIENT QUOTE & SCOPE ESTIMATE",
+        handover: "WORK HANDOVER RECORD"
+      };
+
       document.getElementById("pdfBody").dir = isArabic ? "rtl" : "ltr";
+      document.getElementById("pdfModeBadge").textContent = modeTitles[docMode] || modeTitles.invoice;
       document.getElementById("pdfBizBanner").textContent = biz;
       document.getElementById("pdfRefBanner").textContent = ref + " / v1";
       document.getElementById("pdfPropTitle").textContent = prop;
@@ -362,13 +576,11 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
       const doneCount = itemsState.filter(i => i.status === "done").length;
       const retCount = itemsState.filter(i => i.status === "returnVisit").length;
       const openCount = itemsState.filter(i => i.status === "open").length;
+      const tot = totalAmount();
 
       document.getElementById("pdfSummary").innerHTML =
-        `<span class="done">${doneCount} Done</span>` +
-        `<span>·</span>` +
-        `<span class="ret">${retCount} Return visit</span>` +
-        `<span>·</span>` +
-        `<span>${openCount} Open</span>`;
+        `<div><span class="done">${doneCount} Done</span> &nbsp;·&nbsp; <span class="ret">${retCount} Return visit</span> &nbsp;·&nbsp; <span>${openCount} Open</span></div>` +
+        (tot > 0 ? `<div class="total-pill">Total: ${formatMoney(tot, currency)}</div>` : "");
 
       const container = document.getElementById("itemsContainer");
       container.innerHTML = "";
@@ -380,7 +592,10 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
             <h4>${idx + 1}. ${item.title}</h4>
             <div class="loc">${item.location ? item.location + (item.requiresPhoto ? " · 📷 After photo attached" : "") : (item.requiresPhoto ? "📷 After photo attached" : "General scope")}</div>
           </div>
-          <button type="button" class="badge ${item.status}" data-idx="${idx}" title="Click to toggle status">${statusLabel(item.status)}</button>
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${item.price > 0 ? `<span class="price-tag">${formatMoney(item.price, currency)}</span>` : ""}
+            <button type="button" class="badge ${item.status}" data-idx="${idx}" title="Click to toggle status">${statusLabel(item.status)}</button>
+          </div>
         `;
         container.appendChild(card);
       });
@@ -394,21 +609,36 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
         });
       });
 
+      const payCard = document.getElementById("payCardPreview");
+      if (payLink) {
+        payCard.style.display = "flex";
+        document.getElementById("payCardUrlText").textContent = payLink;
+        document.getElementById("payCardBtn").href = payLink;
+      } else {
+        payCard.style.display = "none";
+      }
+
       const ackEl = document.getElementById("ackPreview");
       if (ack) {
-        ackEl.innerHTML = `I have reviewed this work record, including any open items and return work shown.<br><strong>Acknowledged by:</strong> ${ack} (${nowStr})`;
+        ackEl.innerHTML = `I have reviewed this record, including the scope, line items, and any return work shown.<br><strong>Approved by:</strong> ${ack} (${nowStr})`;
       } else {
-        ackEl.textContent = "No customer acknowledgment recorded. This is the contractor’s work record.";
+        ackEl.textContent = "No customer signature recorded yet. This is the contractor’s official quote and work record.";
       }
     }
 
     function syncFromTextarea() {
-      itemsState = parseNotes(document.getElementById("noteInput").value);
+      const raw = document.getElementById("noteInput").value;
+      const detectedCur = detectCurrencyFromNotes(raw);
+      if (detectedCur) {
+        document.getElementById("currencyInput").value = detectedCur;
+      }
+      itemsState = parseNotes(raw);
       render();
     }
 
-    ["propInput", "clientInput", "bizInput", "refInput", "ackName"].forEach(id => {
+    ["propInput", "clientInput", "bizInput", "refInput", "ackName", "docModeInput", "currencyInput", "payLinkInput"].forEach(id => {
       document.getElementById(id).addEventListener("input", render);
+      document.getElementById(id).addEventListener("change", render);
     });
     document.getElementById("noteInput").addEventListener("input", syncFromTextarea);
 
@@ -422,11 +652,100 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
 
     document.getElementById("printBtn").addEventListener("click", () => window.print());
 
+    // Generate MyFatoorah Payment Link
+    async function generateMyFatoorahLink() {
+      const client = document.getElementById("clientInput").value.trim() || "Valued Client";
+      const currency = document.getElementById("currencyInput").value || "QAR";
+      const ref = document.getElementById("refInput").value.trim() || "SC-0104";
+      const tot = totalAmount() || 150;
+      const btn = document.getElementById("genMfLinkBtn");
+      btn.textContent = "⏳ Creating…";
+      try {
+        const res = await window.MyFatoorahGateway.createInvoiceLink({
+          customerName: client,
+          invoiceValue: tot,
+          currencyIso: currency,
+          reference: ref,
+          items: itemsState
+        });
+        document.getElementById("payLinkInput").value = res.invoiceUrl;
+        render();
+        btn.textContent = "✓ Link Ready";
+        setTimeout(() => { btn.textContent = "⚡ Create Link"; }, 2000);
+      } catch (err) {
+        alert("MyFatoorah Gateway: " + err.message);
+        btn.textContent = "⚡ Create Link";
+      }
+    }
+
+    document.getElementById("genMfLinkBtn").addEventListener("click", generateMyFatoorahLink);
+
+    // WhatsApp Share
+    document.getElementById("whatsappBtn").addEventListener("click", () => {
+      const prop = document.getElementById("propInput").value.trim() || "Property";
+      const client = document.getElementById("clientInput").value.trim();
+      const ref = document.getElementById("refInput").value.trim() || "SC-0104";
+      const currency = document.getElementById("currencyInput").value || "QAR";
+      const payLink = document.getElementById("payLinkInput").value.trim();
+      const tot = totalAmount();
+
+      const lines = [];
+      lines.push(`*SITECODA RECORD · ${ref}*`);
+      lines.push(`Property: ${prop}`);
+      if (client) lines.push(`Client: ${client}`);
+      lines.push("");
+      itemsState.forEach((it, idx) => {
+        const p = it.price > 0 ? ` — ${formatMoney(it.price, currency)}` : "";
+        const l = it.location ? ` (${it.location})` : "";
+        lines.push(`${idx + 1}. [${statusLabel(it.status)}] ${it.title}${l}${p}`);
+      });
+      if (tot > 0) {
+        lines.push("");
+        lines.push(`*Total: ${formatMoney(tot, currency)}*`);
+      }
+      if (payLink) {
+        lines.push(`Pay online (MyFatoorah · QPay / Apple Pay): ${payLink}`);
+      }
+      const url = "https://wa.me/?text=" + encodeURIComponent(lines.join("\n"));
+      window.open(url, "_blank", "noopener");
+    });
+
+    // MyFatoorah Modal
+    const mfModal = document.getElementById("mfModal");
+    function refreshMfModal() {
+      const cfg = window.MyFatoorahGateway.getConfig();
+      document.getElementById("mfModeSelect").value = cfg.mode;
+      document.getElementById("mfProxyInput").value = cfg.proxyUrl || "";
+      const payload = window.MyFatoorahGateway.buildInvoicePayload({
+        customerName: document.getElementById("clientInput").value.trim(),
+        invoiceValue: totalAmount() || 150,
+        currencyIso: document.getElementById("currencyInput").value || "QAR",
+        reference: document.getElementById("refInput").value.trim(),
+        items: itemsState
+      });
+      document.getElementById("mfPayloadPreview").textContent = JSON.stringify(payload, null, 2);
+    }
+
+    document.getElementById("openMfSettingsBtn").addEventListener("click", () => {
+      refreshMfModal();
+      mfModal.classList.add("open");
+    });
+    document.getElementById("closeMfModalBtn").addEventListener("click", () => {
+      mfModal.classList.remove("open");
+    });
+    document.getElementById("saveMfConfigBtn").addEventListener("click", async () => {
+      window.MyFatoorahGateway.saveConfig({
+        mode: document.getElementById("mfModeSelect").value,
+        proxyUrl: document.getElementById("mfProxyInput").value.trim()
+      });
+      mfModal.classList.remove("open");
+      await generateMyFatoorahLink();
+    });
+
     // Signature canvas
     const canvas = document.getElementById("sigCanvas");
     const ctx = canvas.getContext("2d");
     let drawing = false;
-    let hasSig = false;
     ctx.strokeStyle = "#132e40";
     ctx.lineWidth = 2.2;
     ctx.lineCap = "round";
@@ -444,7 +763,6 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
       const p = pos(e);
       ctx.lineTo(p.x, p.y);
       ctx.stroke();
-      hasSig = true;
       const img = document.getElementById("sigPreviewImg");
       img.src = canvas.toDataURL("image/png");
       img.style.display = "block";
@@ -459,7 +777,6 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
 
     document.getElementById("clearSigBtn").addEventListener("click", () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      hasSig = false;
       document.getElementById("sigPreviewImg").style.display = "none";
     });
 
@@ -474,7 +791,7 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
       micBtn.addEventListener("click", () => {
         if (listening) { rec.stop(); return; }
         const isAr = /[\u0600-\u06FF]/.test(document.getElementById("noteInput").value);
-        rec.lang = isAr ? "ar-SA" : "en-US";
+        rec.lang = isAr ? "ar-QA" : "en-US";
         rec.start();
         listening = true;
         micBtn.classList.add("mic-active");
@@ -496,6 +813,7 @@ Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
     }
 
     syncFromTextarea();
+    generateMyFatoorahLink();
   </script>
 </body>
 </html>
