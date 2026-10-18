@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>SiteCoda Studio — Voice & Field Note to Handover PDF</title>
+  <meta name="description" content="Turn job-site voice notes and photos in English, Arabic, or Spanish into a clean, client-ready property handover PDF in seconds.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23132e40'/%3E%3Cpath d='M9 7h10l5 5v14H9z' fill='%23fff'/%3E%3Cpath d='m12 18 3 3 6-7' fill='none' stroke='%232b7775' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --ink: #132e40;
+      --muted: #4f6678;
+      --bg: #edf5f9;
+      --paper: #fafdff;
+      --teal: #146666;
+      --amber: #945c05;
+      --line: rgba(19, 46, 64, 0.14);
+    }
+    .studio-grid {
+      max-width: 1180px;
+      margin: 28px auto 64px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1.08fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 920px) {
+      .studio-grid { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 12px 32px rgba(19, 46, 64, 0.05);
+    }
+    .panel h2 { margin: 0 0 6px; font-size: 22px; color: var(--ink); }
+    .panel p.sub { margin: 0 0 18px; font-size: 14px; color: var(--muted); }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .field-group { margin-bottom: 14px; }
+    .field-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .field-group input, .field-group textarea, .field-group select {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 11px 13px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: #f4f9fc;
+      color: var(--ink);
+      font: inherit;
+      font-size: 14px;
+    }
+    .preset-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chip:hover { border-color: var(--teal); color: var(--teal); }
+    .chip.mic-active {
+      background: #fee2e2;
+      border-color: #dc2626;
+      color: #991b1b;
+    }
+    .preview-sheet {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+    .pdf-banner {
+      background: var(--ink);
+      color: #fff;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pdf-body { padding: 24px; }
+    .pdf-title { font-size: 28px; font-weight: 800; margin: 4px 0 6px; color: var(--ink); }
+    .pdf-meta { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+    .summary-strip {
+      display: flex;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: #f2f7fa;
+      margin-bottom: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .summary-strip .done { color: var(--teal); }
+    .summary-strip .ret { color: var(--amber); }
+    .work-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .work-card h4 { margin: 0 0 4px; font-size: 15px; color: var(--ink); }
+    .work-card .loc { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      cursor: pointer;
+      border: none;
+    }
+    .badge.done { background: rgba(20, 102, 102, 0.12); color: var(--teal); }
+    .badge.returnVisit { background: rgba(148, 92, 5, 0.14); color: var(--amber); }
+    .badge.open { background: rgba(79, 102, 120, 0.14); color: var(--muted); }
+    .sig-box {
+      border: 1px dashed var(--line);
+      border-radius: 10px;
+      background: #fafcfe;
+      width: 100%;
+      height: 110px;
+      touch-action: none;
+      cursor: crosshair;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .btn-primary {
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      background: rgba(19, 46, 64, 0.07);
+      color: var(--ink);
+      border: none;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .pdf-footer {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+    }
+    @media print {
+      header, .input-column, .no-print, footer { display: none !important; }
+      .studio-grid { display: block; margin: 0; padding: 0; }
+      .preview-sheet { border: none; box-shadow: none; }
+      body { background: #fff; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="index.html" aria-label="SiteCoda home"><span class="mark">✓</span> SiteCoda</a>
+    <nav aria-label="Main navigation">
+      <a href="index.html">Overview</a>
+      <a href="studio.html" aria-current="page">Web Handover Studio</a>
+      <a href="support.html">Support</a>
+    </nav>
+  </header>
+
+  <div class="studio-grid">
+    <section class="panel input-column">
+      <p class="eyebrow">WEB &amp; IOS FIELD STUDIO</p>
+      <h2>Turn walk-through notes into a client handover PDF</h2>
+      <p class="sub">Speak or paste your rough site notes in English, Arabic, or Spanish. Click any status pill in the preview to toggle between <strong>Done</strong>, <strong>Return visit</strong>, and <strong>Open</strong>.</p>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="propInput">Property / Site</label>
+          <input id="propInput" type="text" value="Harbour View Apt 4B">
+        </div>
+        <div class="field-group">
+          <label for="clientInput">Client / Manager</label>
+          <input id="clientInput" type="text" value="Northshore Property Mgmt">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="bizInput">Your Business Name</label>
+          <input id="bizInput" type="text" value="Al-Sahli Field Maintenance">
+        </div>
+        <div class="field-group">
+          <label for="refInput">Work Order / Ref</label>
+          <input id="refInput" type="text" value="SC-0104">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="noteInput">Walk-Through Voice / Field Notes</label>
+        <div class="preset-bar">
+          <button type="button" class="chip" id="micBtn">🎙️ Dictate Voice Note</button>
+          <button type="button" class="chip" data-preset="en">Sample: Plumbing &amp; Electrical (EN)</button>
+          <button type="button" class="chip" data-preset="ar">Sample: صيانة عقار (AR)</button>
+          <button type="button" class="chip" data-preset="es">Sample: Mantenimiento (ES)</button>
+        </div>
+        <textarea id="noteInput" rows="6">Kitchen: replaced leaking P-trap under sink and tested ok.
+Bathroom: exhaust fan motor noisy, replacement part needed on return visit.
+Hallway: replaced smoke detector backup battery and tested alarm.
+Exterior: pressure relief valve discharge pipe inspected, open.</textarea>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label for="ackName">Customer Sign-Off Name (Optional)</label>
+          <input id="ackName" type="text" placeholder="e.g. Sarah Jenkins (Property Manager)">
+        </div>
+        <div class="field-group">
+          <label>In-Person Signature</label>
+          <canvas id="sigCanvas" class="sig-box" width="320" height="110"></canvas>
+          <button type="button" class="chip" id="clearSigBtn" style="margin-top:6px;">Clear signature</button>
+        </div>
+      </div>
+
+      <div class="btn-row no-print">
+        <button type="button" class="btn-primary" id="printBtn">Print / Save Handover PDF ↗</button>
+        <a class="btn-secondary" href="sample-report.pdf" target="_blank" style="text-decoration:none;">View iOS Native PDF Sample</a>
+      </div>
+    </section>
+
+    <section class="preview-sheet" aria-label="Live Handover Report Preview">
+      <div class="pdf-banner">
+        <span id="pdfBizBanner">Al-Sahli Field Maintenance</span>
+        <span id="pdfRefBanner">SC-0104 / v1</span>
+      </div>
+      <div class="pdf-body" id="pdfBody">
+        <p class="eyebrow" style="margin:0;">WORK HANDOVER RECORD</p>
+        <div class="pdf-title" id="pdfPropTitle">Harbour View Apt 4B</div>
+        <div class="pdf-meta" id="pdfMeta"></div>
+
+        <div class="summary-strip" id="pdfSummary"></div>
+
+        <div id="itemsContainer"></div>
+
+        <div style="margin-top:20px;">
+          <p class="eyebrow" style="margin-bottom:6px;">CUSTOMER ACKNOWLEDGMENT</p>
+          <div id="ackPreview" style="font-size:13px;color:var(--muted);">No customer acknowledgment recorded. This is the contractor’s work record.</div>
+          <img id="sigPreviewImg" alt="Customer signature" style="display:none;max-width:220px;height:68px;margin-top:8px;border-bottom:1px solid var(--line);">
+        </div>
+
+        <div class="pdf-footer">
+          <span>Generated with <strong>SiteCoda</strong> · Field Handover &amp; Property Ledger</span>
+          <span id="pdfDateFooter"></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <a class="brand" href="index.html">SiteCoda</a>
+    <div>
+      <a href="support.html">Help &amp; support</a>
+      <a href="privacy.html">Privacy</a>
+      <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms</a>
+    </div>
+    <small>© 2026 Hassan Al-Sahli</small>
+  </footer>
+
+  <script>
+    const presets = {
+      en: "Kitchen: replaced leaking P-trap under sink and tested ok.\nBathroom: exhaust fan motor noisy, replacement part needed on return visit.\nHallway: replaced smoke detector backup battery and tested alarm.\nExterior: inspect main shutoff valve access panel.",
+      ar: "المطبخ: تم تغيير خلاط المياه وإصلاح التهريب بالكامل.\nالحمام: مروحة الشفط تحتاج قطعة غيار في زيارة قادمة.\nالممر: تم تركيب حساس الدخان الجديد وتجربته.",
+      es: "Cocina: trampa de agua reemplazada y probada sin fugas, listo.\nBaño: extractor ruidoso, requiere repuesto en próxima visita.\nPasillo: revisar pintura junto a la puerta principal."
+    };
+
+    const returnMarkers = ["return visit", "next visit", "follow-up", "follow up", "need part", "needs part", "replacement part", "زيارة قادمة", "قطعة غيار", "يحتاج قطعة", "próxima visita", "repuesto"];
+    const doneMarkers = ["fixed", "repaired", "replaced", "installed", "completed", "tested", "sealed", "done", "تم ", "تمت", "إصلاح", "تغيير", "تركيب", "reparado", "reemplazado", "instalado", "listo"];
+
+    let itemsState = [];
+
+    function parseNotes(raw) {
+      const lines = raw.replace(/\r\n/g, "\n").split(/[\n.。؛;]+/).map(s => s.trim()).filter(Boolean);
+      let currentLoc = "";
+      return lines.map((line, idx) => {
+        let loc = currentLoc;
+        let body = line.replace(/^(\d+[\.\)\-]\s*|[\-\*•]\s*)/, "");
+        const colonIdx = body.search(/[:\-—]/);
+        if (colonIdx > 1 && colonIdx < 28) {
+          loc = body.slice(0, colonIdx).trim();
+          body = body.slice(colonIdx + 1).trim();
+          currentLoc = loc;
+        }
+        const lower = body.toLowerCase();
+        let status = "open";
+        if (returnMarkers.some(m => lower.includes(m))) status = "returnVisit";
+        else if (doneMarkers.some(m => lower.includes(m))) status = "done";
+        const requiresPhoto = status === "done" && /replaced|repaired|fixed|installed|تغيير|إصلاح|تركيب|reemplazad|reparad/.test(lower);
+        return { id: idx, title: body.charAt(0).toUpperCase() + body.slice(1), location: loc, status, requiresPhoto };
+      });
+    }
+
+    function statusLabel(st) {
+      if (st === "done") return "✓ Done";
+      if (st === "returnVisit") return "↳ Return visit";
+      return "○ Open";
+    }
+
+    function render() {
+      const prop = document.getElementById("propInput").value.trim() || "Property Record";
+      const client = document.getElementById("clientInput").value.trim();
+      const biz = document.getElementById("bizInput").value.trim() || "SiteCoda Work Record";
+      const ref = document.getElementById("refInput").value.trim() || "SC-0001";
+      const ack = document.getElementById("ackName").value.trim();
+      const isArabic = /[\u0600-\u06FF]/.test(document.getElementById("noteInput").value);
+
+      document.getElementById("pdfBody").dir = isArabic ? "rtl" : "ltr";
+      document.getElementById("pdfBizBanner").textContent = biz;
+      document.getElementById("pdfRefBanner").textContent = ref + " / v1";
+      document.getElementById("pdfPropTitle").textContent = prop;
+      const nowStr = new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+      document.getElementById("pdfDateFooter").textContent = nowStr;
+      document.getElementById("pdfMeta").innerHTML =
+        (client ? `<strong>Client:</strong> ${client} &nbsp;·&nbsp; ` : "") +
+        `<strong>Issued:</strong> ${nowStr}`;
+
+      const doneCount = itemsState.filter(i => i.status === "done").length;
+      const retCount = itemsState.filter(i => i.status === "returnVisit").length;
+      const openCount = itemsState.filter(i => i.status === "open").length;
+
+      document.getElementById("pdfSummary").innerHTML =
+        `<span class="done">${doneCount} Done</span>` +
+        `<span>·</span>` +
+        `<span class="ret">${retCount} Return visit</span>` +
+        `<span>·</span>` +
+        `<span>${openCount} Open</span>`;
+
+      const container = document.getElementById("itemsContainer");
+      container.innerHTML = "";
+      itemsState.forEach((item, idx) => {
+        const card = document.createElement("div");
+        card.className = "work-card";
+        card.innerHTML = `
+          <div>
+            <h4>${idx + 1}. ${item.title}</h4>
+            <div class="loc">${item.location ? item.location + (item.requiresPhoto ? " · 📷 After photo attached" : "") : (item.requiresPhoto ? "📷 After photo attached" : "General scope")}</div>
+          </div>
+          <button type="button" class="badge ${item.status}" data-idx="${idx}" title="Click to toggle status">${statusLabel(item.status)}</button>
+        `;
+        container.appendChild(card);
+      });
+
+      container.querySelectorAll("button.badge").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const i = Number(btn.getAttribute("data-idx"));
+          const order = ["done", "returnVisit", "open"];
+          itemsState[i].status = order[(order.indexOf(itemsState[i].status) + 1) % order.length];
+          render();
+        });
+      });
+
+      const ackEl = document.getElementById("ackPreview");
+      if (ack) {
+        ackEl.innerHTML = `I have reviewed this work record, including any open items and return work shown.<br><strong>Acknowledged by:</strong> ${ack} (${nowStr})`;
+      } else {
+        ackEl.textContent = "No customer acknowledgment recorded. This is the contractor’s work record.";
+      }
+    }
+
+    function syncFromTextarea() {
+      itemsState = parseNotes(document.getElementById("noteInput").value);
+      render();
+    }
+
+    ["propInput", "clientInput", "bizInput", "refInput", "ackName"].forEach(id => {
+      document.getElementById(id).addEventListener("input", render);
+    });
+    document.getElementById("noteInput").addEventListener("input", syncFromTextarea);
+
+    document.querySelectorAll("[data-preset]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const key = btn.getAttribute("data-preset");
+        document.getElementById("noteInput").value = presets[key];
+        syncFromTextarea();
+      });
+    });
+
+    document.getElementById("printBtn").addEventListener("click", () => window.print());
+
+    // Signature canvas
+    const canvas = document.getElementById("sigCanvas");
+    const ctx = canvas.getContext("2d");
+    let drawing = false;
+    let hasSig = false;
+    ctx.strokeStyle = "#132e40";
+    ctx.lineWidth = 2.2;
+    ctx.lineCap = "round";
+
+    function pos(e) {
+      const r = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return { x: (clientX - r.left) * (canvas.width / r.width), y: (clientY - r.top) * (canvas.height / r.height) };
+    }
+    function startDraw(e) { e.preventDefault(); drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
+    function moveDraw(e) {
+      if (!drawing) return;
+      e.preventDefault();
+      const p = pos(e);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      hasSig = true;
+      const img = document.getElementById("sigPreviewImg");
+      img.src = canvas.toDataURL("image/png");
+      img.style.display = "block";
+    }
+    function endDraw() { drawing = false; }
+    canvas.addEventListener("mousedown", startDraw);
+    canvas.addEventListener("mousemove", moveDraw);
+    window.addEventListener("mouseup", endDraw);
+    canvas.addEventListener("touchstart", startDraw, { passive: false });
+    canvas.addEventListener("touchmove", moveDraw, { passive: false });
+    window.addEventListener("touchend", endDraw);
+
+    document.getElementById("clearSigBtn").addEventListener("click", () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      hasSig = false;
+      document.getElementById("sigPreviewImg").style.display = "none";
+    });
+
+    // Web Speech API dictation
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const micBtn = document.getElementById("micBtn");
+    if (SpeechRec) {
+      const rec = new SpeechRec();
+      rec.continuous = false;
+      rec.interimResults = false;
+      let listening = false;
+      micBtn.addEventListener("click", () => {
+        if (listening) { rec.stop(); return; }
+        const isAr = /[\u0600-\u06FF]/.test(document.getElementById("noteInput").value);
+        rec.lang = isAr ? "ar-SA" : "en-US";
+        rec.start();
+        listening = true;
+        micBtn.classList.add("mic-active");
+        micBtn.textContent = "🔴 Listening… (Tap to stop)";
+      });
+      rec.onresult = (ev) => {
+        const transcript = ev.results[0][0].transcript;
+        const box = document.getElementById("noteInput");
+        box.value = (box.value.trim() ? box.value.trim() + "\n" : "") + transcript;
+        syncFromTextarea();
+      };
+      rec.onend = () => {
+        listening = false;
+        micBtn.classList.remove("mic-active");
+        micBtn.textContent = "🎙️ Dictate Voice Note";
+      };
+    } else {
+      micBtn.style.display = "none";
+    }
+
+    syncFromTextarea();
+  </script>
+</body>
+</html>
