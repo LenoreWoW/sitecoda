@@ -1,0 +1,30 @@
+.summit {
+  height: min(72vh, 720px);
+  background: linear-gradient(90deg, #071f19c4 0%, transparent 58%), url("kilimanjaro-hero.jpg") center 60% / cover no-repeat;
+}
+
+.summit .stat {
+  z-index: 1;
+}
+
+.summit .stat span {
+  color: #c5d9d2;
+}
+
+@media (max-width: 720px) {
+  .summit {
+    height: 420px;
+    background-position: 63% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .summit {
+    animation: mountain-reveal 1.4s ease-out both;
+  }
+
+  @keyframes mountain-reveal {
+    from { filter: saturate(.65); opacity: .85; }
+    to { filter: saturate(1); opacity: 1; }
+  }
+}
